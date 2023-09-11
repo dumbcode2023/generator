@@ -122,7 +122,8 @@ public class ${ControllerClassName} {
         <#else>
             Map<String, Object> result = new HashMap<>();
             try {
-                <#if Configuration.mybatisPlusEnable><#-- mybatis-plus模式 -->
+                <#if Configuration.mybatisPlusEnable>
+                    <#-- mybatis-plus模式 -->
                     ${ServiceEntityName}.updateById(${EntityName});
                 <#else><#-- mybatis或jpa模式 -->
                     ${ServiceEntityName}.update(${EntityName});
