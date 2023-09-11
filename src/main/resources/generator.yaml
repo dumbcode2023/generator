@@ -1,5 +1,5 @@
 author: dumbcode
-projectName: test4
+projectName: test5
 projectPath: D:\\
 packageName: com.dcode.test
 projectVersion: 1.0
@@ -13,6 +13,7 @@ mapperUnderSource: false
 swaggerEnable: true
 mybatisPlusEnable: true
 knif4jEnable: false
+responseInfoEnable: true
 jpaEnable: false
 fileOverride: false
 idStrategy: AUTO

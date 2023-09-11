@@ -1,4 +1,4 @@
-package com.dcode.test;
+package ${Configuration.packageName};
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

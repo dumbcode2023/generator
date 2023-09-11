@@ -72,13 +72,19 @@ public class FileUtil {
             case FreemarkerConfigUtil.TYPE_INTERFACE:
                 return FreemarkerConfigUtil.getInstance().getTemplate("Interface.ftl");
             case FreemarkerConfigUtil.TYPE_POM:
-                return FreemarkerConfigUtil.getInstance().getTemplate("Pom.ftl");
+                return FreemarkerConfigUtil.getInstance().getTemplate("structure/Pom.ftl");
             case FreemarkerConfigUtil.TYPE_APPLICATION_FILE:
-                return FreemarkerConfigUtil.getInstance().getTemplate("application-yml.ftl");
+                return FreemarkerConfigUtil.getInstance().getTemplate("structure/application-yml.ftl");
             case FreemarkerConfigUtil.TYPE_BOOTSTRAP_CLASS:
-                return FreemarkerConfigUtil.getInstance().getTemplate("Application.ftl");
+                return FreemarkerConfigUtil.getInstance().getTemplate("structure/Application.ftl");
             case FreemarkerConfigUtil.TYPE_SWAGGER_CONFIG:
-                return FreemarkerConfigUtil.getInstance().getTemplate("DockApi.ftl");
+                return FreemarkerConfigUtil.getInstance().getTemplate("structure/DockApi.ftl");
+            case FreemarkerConfigUtil.TYPE_BUSINESS_EXCEPTION:
+                return FreemarkerConfigUtil.getInstance().getTemplate("structure/BusinessException.ftl");
+            case FreemarkerConfigUtil.TYPE_EXCEPTION_HANDLER:
+                return FreemarkerConfigUtil.getInstance().getTemplate("structure/CommonExtHandler.ftl");
+            case FreemarkerConfigUtil.TYPE_RESPONSE:
+                return FreemarkerConfigUtil.getInstance().getTemplate("structure/Response.ftl");
             default:
                 return null;
         }

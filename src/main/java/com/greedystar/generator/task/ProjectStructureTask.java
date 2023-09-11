@@ -40,6 +40,17 @@ public class ProjectStructureTask extends AbstractTask {
         //4. 生成Main class
         FileUtil.generateToJava(TYPE_BOOTSTRAP_CLASS, data, rootPath, "Application.java");
 
-        System.out.println("生成工程结束，api接口页面访问：http://localhost:port/swagger-ui/index.html");
+        //5. 生成统一异常处理
+        FileUtil.generateToJava(TYPE_BUSINESS_EXCEPTION, data, rootPath, "BusinessException.java");
+
+        FileUtil.generateToJava(TYPE_EXCEPTION_HANDLER, data, rootPath, "CommonExtHandler.java");
+
+        FileUtil.generateToJava(TYPE_RESPONSE, data, rootPath, "Response.java");
+
+        if (configuration.isKnif4jEnable()) {
+            System.out.println("生成工程结束，api接口页面访问：http://localhost:port/doc.html");
+        } else {
+            System.out.println("生成工程结束，api接口页面访问：http://localhost:port/swagger-ui/index.html");
+        }
     }
 }

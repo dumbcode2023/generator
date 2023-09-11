@@ -1,4 +1,4 @@
-package com.dcode.test;
+package ${Configuration.packageName};
 
 public class BusinessException extends RuntimeException {
     public BusinessException(String message) {
@@ -8,6 +8,5 @@ public class BusinessException extends RuntimeException {
     public BusinessException(String message, Throwable cause) {
         super(message, cause);
     }
-
 
 }

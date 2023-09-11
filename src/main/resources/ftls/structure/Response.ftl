@@ -1,11 +1,11 @@
-package com.dcode.test;
+package ${Configuration.packageName};
 
 public class Response<T> {
 
     /**
      * 返回状态编码，0表示操作成功
      */
-    private int code = 0;
+    private int status = 0;
 
     private T data;
 
@@ -23,8 +23,8 @@ public class Response<T> {
         this.message = message;
     }
 
-    public Response(int code, String message) {
-        this.code = code;
+    public Response(int status, String message) {
+        this.status = status;
         this.message = message;
     }
 
@@ -40,12 +40,12 @@ public class Response<T> {
         return new Response<>(-1,message);
     }
 
-    public int getCode() {
-        return code;
+    public int getStatus() {
+        return status;
     }
 
-    public void setCode(int code) {
-        this.code = code;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public T getData() {

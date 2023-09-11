@@ -85,12 +85,25 @@ public class Configuration implements Serializable {
 
     private ProjectInfo parent;
 
+    /**
+     * 是否生成统一回复、统一异常处理类
+     */
+    private boolean responseInfoEnable;
+
     public String getAuthor() {
         return author;
     }
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public Boolean getResponseInfoEnable() {
+        return responseInfoEnable;
+    }
+
+    public void setResponseInfoEnable(Boolean responseInfoEnable) {
+        this.responseInfoEnable = responseInfoEnable;
     }
 
     public String getPackageName() {

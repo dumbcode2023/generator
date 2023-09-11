@@ -8,6 +8,9 @@ import io.swagger.annotations.ApiOperation;
 </#if>
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+<#if Configuration.responseInfoEnable>
+import ${Configuration.packageName}.Response;
+</#if>
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -31,16 +34,20 @@ public class ${ControllerClassName} {
     @ApiOperation(value = "查询${EntityName}列表", httpMethod = "GET")
     </#if>
     @GetMapping(value = "")
-    public Object list() {
+    public <#if Configuration.responseInfoEnable>Response<List<${ClassName}>><#else>Object</#if> list() {
         <#if Configuration.mybatisPlusEnable><#-- mybatis-plus模式 -->
-        List<${ClassName}> ${EntityName}s = ${ServiceEntityName}.list();
+            List<${ClassName}> ${EntityName}s = ${ServiceEntityName}.list();
         <#else><#-- mybatis或jpa模式 -->
-        List<${ClassName}> ${EntityName}s = ${ServiceEntityName}.findAll();
+            List<${ClassName}> ${EntityName}s = ${ServiceEntityName}.findAll();
         </#if>
-        Map<String, Object> result = new HashMap<>();
-        result.put("data", ${EntityName}s);
-        result.put("status", 200);
-        result.put("message", "OK");
+        <#if Configuration.responseInfoEnable>
+            Response result = Response.ok(${EntityName}s);
+        <#else>
+            Map<String, Object> result = new HashMap<>();
+            result.put("data", ${EntityName}s);
+            result.put("status", 200);
+            result.put("message", "OK");
+        </#if>
         return result;
     }
 
@@ -48,16 +55,20 @@ public class ${ControllerClassName} {
     @ApiOperation(value = "查看${EntityName}详情", httpMethod = "GET")
     </#if>
     @GetMapping(value = "/{id}")
-    public Object get(@PathVariable("id") ${pkType} id) {
+    public <#if Configuration.responseInfoEnable>Response<${ClassName}><#else> Object </#if> get(@PathVariable("id") ${pkType} id) {
         <#if Configuration.mybatisPlusEnable><#-- mybatis-plus模式 -->
-        ${ClassName} ${EntityName} = ${ServiceEntityName}.getById(id);
+            ${ClassName} ${EntityName} = ${ServiceEntityName}.getById(id);
         <#else><#-- mybatis或jpa模式 -->
-        ${ClassName} ${EntityName} = ${ServiceEntityName}.get(id);
+            ${ClassName} ${EntityName} = ${ServiceEntityName}.get(id);
         </#if>
-        Map<String, Object> result = new HashMap<>();
-        result.put("data", ${EntityName});
-        result.put("status", 200);
-        result.put("message", "OK");
+        <#if Configuration.responseInfoEnable>
+            Response result = Response.ok(${EntityName});
+        <#else>
+            Map<String, Object> result = new HashMap<>();
+            result.put("data", ${EntityName});
+            result.put("status", 200);
+            result.put("message", "OK");
+        </#if>
         return result;
     }
 
@@ -65,44 +76,66 @@ public class ${ControllerClassName} {
     @ApiOperation(value = "创建${EntityName}", httpMethod = "POST")
     </#if>
     @PostMapping(value = "")
-    public Object post(@RequestBody ${ClassName} ${EntityName}) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            <#if Configuration.mybatisPlusEnable><#-- mybatis-plus模式 -->
+    public <#if Configuration.responseInfoEnable> Response<?><#else> Object </#if> post(@RequestBody ${ClassName} ${EntityName}) {
+        <#if Configuration.responseInfoEnable>
+           <#if Configuration.mybatisPlusEnable><#-- mybatis-plus模式 -->
             ${ServiceEntityName}.save(${EntityName});
-            <#else><#-- mybatis或jpa模式 -->
+           <#else><#-- mybatis或jpa模式 -->
             ${ServiceEntityName}.insert(${EntityName});
-            </#if>
-            result.put("status", 200);
-            result.put("message", "OK");
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("status", 500);
-            result.put("message", "ERROR");
-        }
-        return result;
+           </#if>
+            return Response.ok();
+        <#else>
+            Map<String, Object> result = new HashMap<>();
+            try {
+                <#if Configuration.mybatisPlusEnable>
+                    <#-- mybatis-plus模式 -->
+                    ${ServiceEntityName}.save(${EntityName});
+                <#else>
+                    <#-- mybatis或jpa模式 -->
+                    ${ServiceEntityName}.insert(${EntityName});
+                </#if>
+                result.put("status", 200);
+                result.put("message", "OK");
+            } catch (Exception e) {
+                e.printStackTrace();
+                result.put("status", 500);
+                result.put("message", "ERROR");
+            }
+            return result;
+        </#if>
     }
 
     <#if Configuration.swaggerEnable>
     @ApiOperation(value = "修改${EntityName}信息", httpMethod = "PUT")
     </#if>
     @PutMapping(value = "")
-    public Object put(@RequestBody ${ClassName} ${EntityName}) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            <#if Configuration.mybatisPlusEnable><#-- mybatis-plus模式 -->
-            ${ServiceEntityName}.updateById(${EntityName});
-            <#else><#-- mybatis或jpa模式 -->
-            ${ServiceEntityName}.update(${EntityName});
+    public <#if Configuration.responseInfoEnable> Response<?><#else> Object </#if> put(@RequestBody ${ClassName} ${EntityName}) {
+        <#if Configuration.responseInfoEnable>
+            <#if Configuration.mybatisPlusEnable>
+                <#-- mybatis-plus模式 -->
+                ${ServiceEntityName}.updateById(${EntityName});
+            <#else>
+                <#-- mybatis或jpa模式 -->
+                ${ServiceEntityName}.update(${EntityName});
             </#if>
-            result.put("status", 200);
-            result.put("message", "OK");
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("status", 500);
-            result.put("message", "ERROR");
-        }
-        return result;
+            return Response.ok();
+        <#else>
+            Map<String, Object> result = new HashMap<>();
+            try {
+                <#if Configuration.mybatisPlusEnable><#-- mybatis-plus模式 -->
+                    ${ServiceEntityName}.updateById(${EntityName});
+                <#else><#-- mybatis或jpa模式 -->
+                    ${ServiceEntityName}.update(${EntityName});
+                </#if>
+                result.put("status", 200);
+                result.put("message", "OK");
+            } catch (Exception e) {
+                e.printStackTrace();
+                result.put("status", 500);
+                result.put("message", "ERROR");
+            }
+            return result;
+        </#if>
     }
 
 
@@ -110,22 +143,35 @@ public class ${ControllerClassName} {
     @ApiOperation(value = "删除${EntityName}", httpMethod = "DELETE")
     </#if>
     @DeleteMapping(value = "")
-    public Object delete(@RequestBody ${ClassName} ${EntityName}) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            <#if Configuration.mybatisPlusEnable><#-- mybatis-plus模式 -->
-            ${ServiceEntityName}.removeById(${EntityName}.getId());
-            <#else><#-- mybatis或jpa模式 -->
-            ${ServiceEntityName}.delete(${EntityName});
+    public <#if Configuration.responseInfoEnable> Response<?><#else> Object </#if> delete(@RequestBody ${ClassName} ${EntityName}) {
+        <#if Configuration.responseInfoEnable>
+            <#if Configuration.mybatisPlusEnable>
+                <#-- mybatis-plus模式 -->
+                ${ServiceEntityName}.removeById(${EntityName}.getId());
+            <#else>
+                <#-- mybatis或jpa模式 -->
+                ${ServiceEntityName}.delete(${EntityName});
             </#if>
-            result.put("status", 200);
-            result.put("message", "OK");
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("status", 500);
-            result.put("message", "ERROR");
-        }
-        return result;
+            return Response.ok();
+        <#else>
+            Map<String, Object> result = new HashMap<>();
+            try {
+                <#if Configuration.mybatisPlusEnable>
+                    <#-- mybatis-plus模式 -->
+                    ${ServiceEntityName}.removeById(${EntityName}.getId());
+                <#else>
+                    <#-- mybatis或jpa模式 -->
+                    ${ServiceEntityName}.delete(${EntityName});
+                </#if>
+                result.put("status", 200);
+                result.put("message", "OK");
+            } catch (Exception e) {
+                e.printStackTrace();
+                result.put("status", 500);
+                result.put("message", "ERROR");
+            }
+            return result;
+        </#if>
     }
 
 }

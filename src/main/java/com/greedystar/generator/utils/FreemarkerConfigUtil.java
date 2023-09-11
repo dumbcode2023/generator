@@ -29,6 +29,9 @@ public class FreemarkerConfigUtil {
     public final static int TYPE_APPLICATION_FILE = 7;
     public final static int TYPE_BOOTSTRAP_CLASS = 8;
     public final static int TYPE_SWAGGER_CONFIG = 9;
+    public final static int TYPE_BUSINESS_EXCEPTION = 10;
+    public final static int TYPE_EXCEPTION_HANDLER = 11;
+    public final static int TYPE_RESPONSE = 12;
     public static Configuration getInstance() {
         if (null == configuration) {
             synchronized (FreemarkerConfigUtil.class) {
