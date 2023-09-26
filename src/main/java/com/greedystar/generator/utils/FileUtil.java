@@ -1,6 +1,6 @@
 package com.greedystar.generator.utils;
 
-import com.greedystar.generator.entity.Configuration;
+import com.greedystar.generator.context.ProjectContext;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
@@ -96,10 +96,10 @@ public class FileUtil {
      * @return 项目根路径
      */
     private static StringBuilder getBasicProjectPath() {
-        Configuration configuration = ConfigUtil.getConfiguration();
-        if (!StringUtil.isEmpty(configuration.getProjectPath())) {
-            return new StringBuilder().append(configuration.getProjectPath())
-                    .append(configuration.getProjectName())
+        ProjectContext projectContext = ConfigUtil.getConfiguration();
+        if (!StringUtil.isEmpty(projectContext.getProjectPath())) {
+            return new StringBuilder().append(projectContext.getProjectPath())
+                    .append(projectContext.getArtifactId())
                     .append(separator);
         }
         StringBuilder sb = new StringBuilder();

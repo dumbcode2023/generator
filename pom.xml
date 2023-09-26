@@ -58,6 +58,44 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.15</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+<groupId>org.mockito</groupId>
+<artifactId>mockito-all</artifactId>
+            <version>1.10.19</version><scope>test</scope>
+</dependency>
     </dependencies>
-
+    <build>
+        <plugins>
+			<plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>3.6.0</version>
+            <projectContext>
+                <archive>
+                    <manifest>
+                        <mainClass>com.greedystar.generator.application.Main</mainClass>
+                    </manifest>
+                </archive>
+                <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+            </projectContext>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+        </plugin>
+        </plugins>
+    </build>
 </project>

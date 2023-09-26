@@ -1,13 +1,13 @@
 package com.greedystar.generator.invoker.base;
 
+import com.greedystar.generator.context.DomainContext;
 import com.greedystar.generator.db.ConnectionUtil;
-import com.greedystar.generator.entity.ColumnInfo;
 import com.greedystar.generator.task.base.AbstractTask;
+import com.greedystar.generator.utils.ConfigUtil;
 import com.greedystar.generator.utils.TaskQueue;
 import freemarker.template.TemplateException;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -16,42 +16,9 @@ import java.util.concurrent.Executors;
  * @since 2018/9/5
  */
 public abstract class AbstractInvoker implements Invoker {
-    /**
-     * 主表名
-     */
-    protected String tableName;
-    /**
-     * 主类名
-     */
-    protected String className;
-    /**
-     * 父表名
-     */
-    protected String parentTableName;
-    /**
-     * 父类名
-     */
-    protected String parentClassName;
-    /**
-     * 外键列名
-     */
-    protected String foreignKey;
-    /**
-     * 关系表名
-     */
-    protected String relationalTableName;
-    /**
-     * 父表外键列名
-     */
-    protected String parentForeignKey;
-    /**
-     * 主表元数据
-     */
-    protected List<ColumnInfo> tableInfos;
-    /**
-     * 父表元数据
-     */
-    protected List<ColumnInfo> parentTableInfos;
+
+    private DomainContext domainContext;
+
     /**
      * 数据库连接工具
      */
@@ -83,6 +50,7 @@ public abstract class AbstractInvoker implements Invoker {
     @Override
     public void execute() {
         try {
+            domainContext.setProjectCtx(ConfigUtil.getConfiguration());
             queryMetaData();
             initTasks();
             while (!taskQueue.isEmpty()) {
@@ -90,9 +58,7 @@ public abstract class AbstractInvoker implements Invoker {
                 executorPool.execute(() -> {
                     try {
                         task.run();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (TemplateException e) {
+                    } catch (IOException | TemplateException e) {
                         e.printStackTrace();
                     }
                 });
@@ -103,75 +69,11 @@ public abstract class AbstractInvoker implements Invoker {
         }
     }
 
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
+    public DomainContext getDomainContext() {
+        return domainContext;
     }
 
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    public void setParentTableName(String parentTableName) {
-        this.parentTableName = parentTableName;
-    }
-
-    public void setParentClassName(String parentClassName) {
-        this.parentClassName = parentClassName;
-    }
-
-    public void setForeignKey(String foreignKey) {
-        this.foreignKey = foreignKey;
-    }
-
-    public void setRelationalTableName(String relationalTableName) {
-        this.relationalTableName = relationalTableName;
-    }
-
-    public void setParentForeignKey(String parentForeignKey) {
-        this.parentForeignKey = parentForeignKey;
-    }
-
-    public String getTableName() {
-        return tableName;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public String getParentTableName() {
-        return parentTableName;
-    }
-
-    public String getParentClassName() {
-        return parentClassName;
-    }
-
-    public String getForeignKey() {
-        return foreignKey;
-    }
-
-    public String getRelationalTableName() {
-        return relationalTableName;
-    }
-
-    public String getParentForeignKey() {
-        return parentForeignKey;
-    }
-
-    public List<ColumnInfo> getTableInfos() {
-        return tableInfos;
-    }
-
-    public void setTableInfos(List<ColumnInfo> tableInfos) {
-        this.tableInfos = tableInfos;
-    }
-
-    public List<ColumnInfo> getParentTableInfos() {
-        return parentTableInfos;
-    }
-
-    public void setParentTableInfos(List<ColumnInfo> parentTableInfos) {
-        this.parentTableInfos = parentTableInfos;
+    public void setDomainContext(DomainContext domainContext) {
+        this.domainContext = domainContext;
     }
 }

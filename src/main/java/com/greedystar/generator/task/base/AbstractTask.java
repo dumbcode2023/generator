@@ -1,6 +1,7 @@
 package com.greedystar.generator.task.base;
 
-import com.greedystar.generator.invoker.base.AbstractInvoker;
+import com.greedystar.generator.context.DomainContext;
+import com.greedystar.generator.describer.ClassDescriber;
 import freemarker.template.TemplateException;
 
 import java.io.IOException;
@@ -11,9 +12,11 @@ import java.io.Serializable;
  * @since 2018/4/20
  */
 public abstract class AbstractTask implements Serializable {
-    protected AbstractInvoker invoker;
+    protected DomainContext domainCtx;
+    protected ClassDescriber describer;
 
     public AbstractTask() {
+
     }
 
     /**

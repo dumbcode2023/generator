@@ -12,7 +12,7 @@ mapperUnderSource: false
 idStrategy: AUTO
 beans:
   - code: controller
-    path: controller
+    path: controller2
     nameTemplate: $Controller
   - code: serviceImpl
     path: service

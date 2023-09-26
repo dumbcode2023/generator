@@ -61,6 +61,11 @@
                 <version>${Configuration.knif4jVersion}</version>
             </dependency>
         </#if>
+
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-data-jpa</artifactId>
+                </dependency>
     </dependencies>
 
 </project>

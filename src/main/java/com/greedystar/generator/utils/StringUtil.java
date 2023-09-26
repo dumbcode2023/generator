@@ -1,6 +1,9 @@
 package com.greedystar.generator.utils;
 
+import sun.misc.Unsafe;
+
 import java.io.File;
+import java.lang.reflect.Field;
 
 /**
  * @author GreedyStar
@@ -15,11 +18,16 @@ public class StringUtil {
      * @return 是否为空
      */
     public static boolean isEmpty(String string) {
-        if (string == null || string.trim().equals("")) {
-            return true;
-        } else {
-            return false;
-        }
+        return string == null || string.trim().equals("");
+    }
+    /**
+     * 判断字符串是否为空
+     *
+     * @param string 待检测字符串
+     * @return 是否非空
+     */
+    public static boolean isNotEmpty(String string) {
+        return string != null && string.length() > 0;
     }
 
     /**
@@ -135,6 +143,18 @@ public class StringUtil {
                 .replace("jpa-enable", "jpaEnable")
                 .replace("id-strategy", "idStrategy")
                 .replace("file-override", "fileOverride");
+    }
+
+    public static void main(String[] args) {
+        try {
+            Field f = Unsafe.class.getDeclaredField("theUnsafe");
+            f.setAccessible(true);
+            Unsafe unsafe = (Unsafe) f.get(null);
+            unsafe.allocateMemory(1000l);
+            NoSuchFieldException exception;
+        }catch (NoSuchFieldException|IllegalAccessException e){
+            e.printStackTrace();
+        }
     }
 
 }

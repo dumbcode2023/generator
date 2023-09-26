@@ -1,61 +1,90 @@
 package com.greedystar.generator.task;
 
-import com.greedystar.generator.entity.Constant;
-import com.greedystar.generator.invoker.base.AbstractInvoker;
-import com.greedystar.generator.task.base.AbstractTask;
-import com.greedystar.generator.utils.*;
+import com.greedystar.generator.context.BeanContext;
+import com.greedystar.generator.context.DomainContext;
+import com.greedystar.generator.context.ProjectContext;
+import com.greedystar.generator.describer.ClassDescriber;
+import com.greedystar.generator.describer.FieldDescriber;
+import com.greedystar.generator.task.base.AbstractJavaTask;
+import com.greedystar.generator.utils.FileUtil;
+import com.greedystar.generator.utils.FreemarkerConfigUtil;
+import com.greedystar.generator.utils.StringUtil;
+import com.greedystar.generator.utils.TemplateUtil;
 import freemarker.template.TemplateException;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static com.greedystar.generator.entity.Constant.PLACEHOLDER;
 
 /**
  * @author GreedyStar
  * @since 2018/4/20
  */
-public class ServiceTask extends AbstractTask {
+public class ServiceTask extends AbstractJavaTask {
 
-    public ServiceTask(AbstractInvoker invoker) {
-        this.invoker = invoker;
+    public ServiceTask(DomainContext domainContext) {
+        this.domainCtx = domainContext;
+        buildDescriber(this.domainCtx);
+    }
+
+    private void buildDescriber(DomainContext domainContext) {
+        describer = new ClassDescriber();
+        String serviceClassName = BeanContext.getConfig(BeanContext.Type.SERVICE_IMPL).getFormat()
+                .replace(PLACEHOLDER, domainContext.getClassName());
+        serviceClassName = serviceClassName.contains("Impl") ? serviceClassName : serviceClassName + "Impl";
+        describer.setClassName(serviceClassName);
+        describer.setComment(domainContext.getColumnInfoList().get(0).getTableRemarks());
+        describer.setFieldList(buildFields());
     }
 
     @Override
     public void run() throws IOException, TemplateException {
         // 构造Service填充数据
-        Map<String, Object> serviceData = new HashMap<>();
-        serviceData.put("Configuration", ConfigUtil.getConfiguration());
-        serviceData.put("ClassName", ConfigUtil.getConfiguration().getName().getEntity().replace(Constant.PLACEHOLDER, invoker.getClassName()));
-        serviceData.put("EntityName", StringUtil.firstToLowerCase(invoker.getClassName()));
-        serviceData.put("DaoClassName", ConfigUtil.getConfiguration().getName().getDao().replace(Constant.PLACEHOLDER, invoker.getClassName()));
-        serviceData.put("DaoEntityName", StringUtil.firstToLowerCase(ConfigUtil.getConfiguration().getName().getDao()
-                .replace(Constant.PLACEHOLDER, invoker.getClassName())));
-        String filePath = FileUtil.getSourcePath() + StringUtil.package2Path(ConfigUtil.getConfiguration().getPackageName())
-                + StringUtil.package2Path(ConfigUtil.getConfiguration().getPath().getService());
-        String fileName;
-        /*
-         * 根据用户是否配置了path节点下的interf属性来判断是否采用接口+实现类的方式
-         */
-        String serviceClassName = ConfigUtil.getConfiguration().getName().getService().replace(Constant.PLACEHOLDER, invoker.getClassName());
-        if (StringUtil.isEmpty(ConfigUtil.getConfiguration().getPath().getInterf())) {
-            serviceData.put("ServiceClassName", serviceClassName);
-            serviceData.put("Implements", "");
-            serviceData.put("InterfaceImport", "");
-            serviceData.put("Override", "");
-            fileName = ConfigUtil.getConfiguration().getName().getService().replace(Constant.PLACEHOLDER, invoker.getClassName()) + ".java";
-        } else {
-            // Service接口实现类默认由Impl结尾
-            serviceClassName = serviceClassName.contains("Impl") ? serviceClassName : serviceClassName + "Impl";
-            serviceData.put("ServiceClassName", serviceClassName);
-            serviceData.put("Implements", "implements " + ConfigUtil.getConfiguration().getName().getInterf()
-                    .replace(Constant.PLACEHOLDER, invoker.getClassName()));
-            serviceData.put("InterfaceImport", "import " + ConfigUtil.getConfiguration().getPackageName() + "."
-                    + ConfigUtil.getConfiguration().getPath().getInterf() + "."
-                    + ConfigUtil.getConfiguration().getName().getInterf().replace(Constant.PLACEHOLDER, invoker.getClassName()) + ";");
-            serviceData.put("Override", "\n    @Override");
-            fileName = serviceClassName + ".java";
-        }
-        // 生成Service文件
-        FileUtil.generateToJava(FreemarkerConfigUtil.TYPE_SERVICE, serviceData, filePath, fileName);
+        Map<String, Object> data = new HashMap<>();
+        ProjectContext projectCtx = domainCtx.getProjectCtx();
+        data.put("Configuration", projectCtx);
+        BeanContext beanCtx = BeanContext.getConfig(BeanContext.Type.SERVICE_IMPL);
+        String className = BeanContext.getConfig(BeanContext.Type.SERVICE_IMPL).getFormat()
+                .replace(PLACEHOLDER, domainCtx.getClassName());
+        //实现接口
+        data.put("Implements", "implements " + className.replace(PLACEHOLDER, domainCtx.getClassName()));
+        BeanContext parentInterface = BeanContext.getConfig(BeanContext.Type.SERVICE);
+        //引入接口包
+        data.put("InterfaceImport", "import " + projectCtx.getPackageName() + "."
+                + parentInterface.getPath() + "."
+                + parentInterface.getFormat().replace(PLACEHOLDER, domainCtx.getClassName()) + ";");
+
+        data.put("objectInfo", describer);
+
+        String fileName = className + ".java";
+        String filePath = FileUtil.getSourcePath() + StringUtil.package2Path(projectCtx.getPackageName())
+                + StringUtil.package2Path(beanCtx.getPath());
+
+        TemplateUtil.render(data, FreemarkerConfigUtil.getInstance().getTemplate(getTemplate()), new File(filePath, fileName));
+    }
+
+    private List<FieldDescriber> buildFields() {
+        List<FieldDescriber> fieldList = new ArrayList<>();
+        FieldDescriber field = new FieldDescriber();
+        BeanContext daoConfig = BeanContext.getConfig(BeanContext.Type.DAO);
+        String daoClassName = daoConfig.getFormat().replace(PLACEHOLDER, domainCtx.getClassName());
+        field.setName(StringUtil.firstToLowerCase(daoClassName));
+        field.setModifier("private");
+        ClassDescriber daoClass = new ClassDescriber();
+        daoClass.setClassName(daoClassName);
+        daoClass.setPackageName(daoConfig.getPath());
+        field.setClassType(daoClass);
+        fieldList.add(field);
+        return fieldList;
+    }
+
+    @Override
+    protected String getTemplate() {
+        return "Service.ftl";
     }
 }

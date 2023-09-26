@@ -1,5 +1,6 @@
 package com.greedystar.generator.invoker;
 
+import com.greedystar.generator.context.DomainContext;
 import com.greedystar.generator.invoker.base.AbstractBuilder;
 import com.greedystar.generator.invoker.base.AbstractInvoker;
 import com.greedystar.generator.utils.StringUtil;
@@ -16,7 +17,8 @@ public class SingleInvoker extends AbstractInvoker {
 
     @Override
     protected void queryMetaData() throws Exception {
-        tableInfos = connectionUtil.getMetaData(tableName);
+        DomainContext domainContext = getDomainContext();
+        domainContext.setColumnInfoList(connectionUtil.getMetaData(domainContext.getTableName()));
     }
 
     @Override
@@ -31,22 +33,22 @@ public class SingleInvoker extends AbstractInvoker {
         }
 
         public Builder setTableName(String tableName) {
-            invoker.setTableName(tableName);
+            invoker.getDomainContext().setTableName(tableName);
             return this;
         }
 
         public Builder setClassName(String className) {
-            invoker.setClassName(className);
+            invoker.getDomainContext().setClassName(className);
             return this;
         }
 
         @Override
         public void checkBeforeBuild() throws Exception {
-            if (StringUtil.isEmpty(invoker.getTableName())) {
+            if (StringUtil.isEmpty(invoker.getDomainContext().getTableName())) {
                 throw new Exception("Table name can't be null.");
             }
-            if (StringUtil.isEmpty(invoker.getClassName())) {
-                invoker.setClassName(StringUtil.tableName2ClassName(invoker.getTableName()));
+            if (StringUtil.isEmpty(invoker.getDomainContext().getClassName())) {
+                invoker.getDomainContext().setClassName(StringUtil.tableName2ClassName(invoker.getDomainContext().getTableName()));
             }
         }
     }

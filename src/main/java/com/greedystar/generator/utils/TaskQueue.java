@@ -1,9 +1,12 @@
 package com.greedystar.generator.utils;
 
+import com.greedystar.generator.context.BeanContext;
+import com.greedystar.generator.context.DomainContext;
 import com.greedystar.generator.entity.Mode;
 import com.greedystar.generator.invoker.base.AbstractInvoker;
 import com.greedystar.generator.task.*;
 import com.greedystar.generator.task.base.AbstractTask;
+import com.greedystar.generator.task.entity.EntityTask;
 
 import java.util.LinkedList;
 
@@ -24,22 +27,24 @@ public class TaskQueue {
      * @param invoker 执行器
      */
     private void initCommonTasks(AbstractInvoker invoker) {
-        if (!StringUtil.isEmpty(ConfigUtil.getConfiguration().getPath().getController())) {
-            taskQueue.add(new ControllerTask(invoker));
+        DomainContext domainContext = invoker.getDomainContext();
+
+        if (BeanContext.getConfig(BeanContext.Type.CONTROLLER) != null) {
+            taskQueue.add(new ControllerTask(domainContext));
         }
-        if (!StringUtil.isEmpty(ConfigUtil.getConfiguration().getPath().getService())) {
-            taskQueue.add(new ServiceTask(invoker));
+        if (BeanContext.getConfig(BeanContext.Type.SERVICE_IMPL) != null) {
+            taskQueue.add(new ServiceTask(invoker.getDomainContext()));
         }
-        if (!StringUtil.isEmpty(ConfigUtil.getConfiguration().getPath().getInterf())) {
-            taskQueue.add(new InterfaceTask(invoker));
+        if (BeanContext.getConfig(BeanContext.Type.SERVICE) != null) {
+            taskQueue.add(new InterfaceTask(domainContext));
         }
-        if (!StringUtil.isEmpty(ConfigUtil.getConfiguration().getPath().getDao())) {
-            taskQueue.add(new DaoTask(invoker));
+        if (BeanContext.getConfig(BeanContext.Type.DAO) != null) {
+            taskQueue.add(new DaoTask(invoker.getDomainContext()));
         }
-        if (!StringUtil.isEmpty(ConfigUtil.getConfiguration().getPath().getMapper())) {
-            taskQueue.add(new MapperTask(invoker));
-        }
-        if(!StringUtil.isEmpty(ConfigUtil.getConfiguration().getProjectPath())){
+//        if (BeanConfig.getConfig(BeanConfig.Type.MAPPER)!=null) {
+//            taskQueue.add(new MapperTask(invoker));
+//        }
+        if (domainContext.getProjectCtx() != null) {
             taskQueue.add(new ProjectStructureTask());
         }
     }
@@ -51,49 +56,50 @@ public class TaskQueue {
      */
     public void initSingleTasks(AbstractInvoker invoker) {
         initCommonTasks(invoker);
-        if (!StringUtil.isEmpty(ConfigUtil.getConfiguration().getPath().getEntity())) {
-            taskQueue.add(new EntityTask(Mode.ENTITY_MAIN, invoker));
+        BeanContext bean = BeanContext.getConfig(BeanContext.Type.ENTITY);
+        if (bean != null) {
+            taskQueue.add(new EntityTask(Mode.ENTITY_MAIN, invoker.getDomainContext()));
         }
     }
 
-    /**
-     * 初始化单表生成任务，包括Entity、Mapper任务
-     *
-     * @param invoker 执行器
-     */
-    public void initMany2OneTasks(AbstractInvoker invoker) {
-        initCommonTasks(invoker);
-        if (!StringUtil.isEmpty(ConfigUtil.getConfiguration().getPath().getEntity())) {
-            taskQueue.add(new EntityTask(Mode.ENTITY_MAIN, invoker));
-            taskQueue.add(new EntityTask(Mode.ENTITY_PARENT, invoker));
-        }
-    }
-
-    /**
-     * 初始化单表生成任务，包括Entity、Mapper任务
-     *
-     * @param invoker 执行器
-     */
-    public void initOne2ManyTasks(AbstractInvoker invoker) {
-        initCommonTasks(invoker);
-        if (!StringUtil.isEmpty(ConfigUtil.getConfiguration().getPath().getEntity())) {
-            taskQueue.add(new EntityTask(Mode.ENTITY_MAIN, invoker));
-            taskQueue.add(new EntityTask(Mode.ENTITY_PARENT, invoker));
-        }
-    }
-
-    /**
-     * 初始化单表生成任务，包括Entity、Mapper任务
-     *
-     * @param invoker 执行器
-     */
-    public void initMany2ManyTasks(AbstractInvoker invoker) {
-        initCommonTasks(invoker);
-        if (!StringUtil.isEmpty(ConfigUtil.getConfiguration().getPath().getEntity())) {
-            taskQueue.add(new EntityTask(Mode.ENTITY_MAIN, invoker));
-            taskQueue.add(new EntityTask(Mode.ENTITY_PARENT, invoker));
-        }
-    }
+//    /**
+//     * 初始化单表生成任务，包括Entity、Mapper任务
+//     *
+//     * @param invoker 执行器
+//     */
+//    public void initMany2OneTasks(AbstractInvoker invoker) {
+//        initCommonTasks(invoker);
+//        if (!StringUtil.isEmpty(ConfigUtil.getConfiguration().getPath().getEntity())) {
+//            taskQueue.add(new EntityTask(Mode.ENTITY_MAIN, invoker));
+//            taskQueue.add(new EntityTask(Mode.ENTITY_PARENT, invoker));
+//        }
+//    }
+//
+//    /**
+//     * 初始化单表生成任务，包括Entity、Mapper任务
+//     *
+//     * @param invoker 执行器
+//     */
+//    public void initOne2ManyTasks(AbstractInvoker invoker) {
+//        initCommonTasks(invoker);
+//        if (!StringUtil.isEmpty(ConfigUtil.getConfiguration().getPath().getEntity())) {
+//            taskQueue.add(new EntityTask(Mode.ENTITY_MAIN, invoker));
+//            taskQueue.add(new EntityTask(Mode.ENTITY_PARENT, invoker));
+//        }
+//    }
+//
+//    /**
+//     * 初始化单表生成任务，包括Entity、Mapper任务
+//     *
+//     * @param invoker 执行器
+//     */
+//    public void initMany2ManyTasks(AbstractInvoker invoker) {
+//        initCommonTasks(invoker);
+//        if (!StringUtil.isEmpty(ConfigUtil.getConfiguration().getPath().getEntity())) {
+//            taskQueue.add(new EntityTask(Mode.ENTITY_MAIN, invoker));
+//            taskQueue.add(new EntityTask(Mode.ENTITY_PARENT, invoker));
+//        }
+//    }
 
     /**
      * 任务队列是否为空
