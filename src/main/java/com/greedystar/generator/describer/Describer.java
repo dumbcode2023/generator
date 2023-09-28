@@ -1,6 +1,8 @@
 package com.greedystar.generator.describer;
 
-public interface Describer{
+import java.io.Serializable;
+
+public interface Describer extends Serializable {
 
 
 }

@@ -3,69 +3,69 @@ package com.greedystar.generator.task;
 import com.greedystar.generator.context.BeanContext;
 import com.greedystar.generator.context.DomainContext;
 import com.greedystar.generator.context.ProjectContext;
-import com.greedystar.generator.entity.Constant;
-import com.greedystar.generator.task.base.AbstractTask;
+import com.greedystar.generator.describer.RField;
+import com.greedystar.generator.task.base.AbstractClassTask;
 import com.greedystar.generator.utils.FileUtil;
-import com.greedystar.generator.utils.FreemarkerConfigUtil;
-import com.greedystar.generator.utils.StringUtil;
+import com.greedystar.generator.utils.TemplateUtil;
 import freemarker.template.TemplateException;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static com.greedystar.generator.entity.Constant.PLACEHOLDER;
+import static com.greedystar.generator.utils.StringUtil.package2Path;
 
 /**
  * @author GreedyStar
  * @since 2018/4/20
  */
-public class ControllerTask extends AbstractTask {
+public class ControllerTask extends AbstractClassTask {
 
-    public ControllerTask(DomainContext invoker) {
-        this.domainCtx = invoker;
+    private final BeanContext serviceCtx;
+
+    private final BeanContext entityCtx;
+
+    public ControllerTask(BeanContext beanContext, BeanContext serviceCtx, BeanContext entityCtx) {
+        super(beanContext);
+        this.serviceCtx = serviceCtx;
+        this.entityCtx = entityCtx;
     }
 
     @Override
     public void run() throws IOException, TemplateException {
-        // 构造Controller填充数据
-        Map<String, Object> controllerData = new HashMap<>();
-        ProjectContext projectContext = domainCtx.getProjectCtx();
-        controllerData.put("Configuration", projectContext);
-        BeanContext serviceConfig = BeanContext.getConfig(BeanContext.Type.SERVICE);
-        String serviceClassName =serviceConfig.getFormat().replace(Constant.PLACEHOLDER, domainCtx.getClassName());
-        String serviceImport = String.format("import %s.%s.%s;", projectContext.getPackageName(),
-                serviceConfig.getPath(), serviceClassName);
-        controllerData.put("ServiceImport", serviceImport);
-        controllerData.put("ServiceClassName", serviceClassName);
-        controllerData.put("ServiceEntityName", StringUtil.firstToLowerCase(serviceClassName));
-        BeanContext controllerConfig = BeanContext.getConfig(BeanContext.Type.CONTROLLER);
-        controllerData.put("ControllerClassName", controllerConfig.getFormat()
-                .replace(Constant.PLACEHOLDER, domainCtx.getClassName()));
-        controllerData.put("ClassName", BeanContext.getConfig(BeanContext.Type.ENTITY).getFormat()
-                .replace(Constant.PLACEHOLDER, domainCtx.getClassName()));
-//        controllerData.put("pkType", getPrimaryKeyType(invoker.getColumnInfoList()));
-        String filePath = FileUtil.getSourcePath() + StringUtil.package2Path(projectContext.getPackageName()) +
-                StringUtil.package2Path(controllerConfig.getPath());
-        String fileName = controllerConfig.getFormat().replace(Constant.PLACEHOLDER, domainCtx.getClassName()) + ".java";
-        // 生成Controller文件
-        FileUtil.generateToJava(FreemarkerConfigUtil.TYPE_CONTROLLER, controllerData, filePath, fileName);
+        Map<String, Object> data = new HashMap<>();
+        DomainContext domainCtx = beanContext.getDomainContext();
+        ProjectContext projectCtx = domainCtx.getProjectCtx();
+        data.put("Configuration", projectCtx);
+        data.put("tableInfo", domainCtx.getTableInfo());
+        data.put("imports", buildImports(domainCtx));
+        classInfo = beanContext.toClass();
+        classInfo.setFields(RField.ofBean(serviceCtx));
+        data.put("classInfo", classInfo);
+        data.put("service", serviceCtx.toClass());
+        data.put("entity", entityCtx.toClass());
+        String filePath = FileUtil.getSourcePath() + package2Path(projectCtx.getPackageName() +"."+
+                beanContext.getPath());
+        String fileName = beanContext.getFormat().replace(PLACEHOLDER, domainCtx.getClassName()) + ".java";
+        TemplateUtil.render(data, TemplateUtil.getInstance().getTemplate(template()), new File(filePath, fileName));
     }
 
-//    /**
-//     * 获取主键列对应的属性类型
-//     *
-//     * @param columnInfos
-//     * @return
-//     */
-//    private String getPrimaryKeyType(List<ColumnInfo> columnInfos) {
-//        if (pro) {
-//            return "Serializable";
-//        }
-//        for (ColumnInfo info : columnInfos) {
-//            if (info.isPrimaryKey()) {
-//                return info.getPropertyType();
-//            }
-//        }
-//        return "Serializable";
-//    }
+    private List<String> buildImports(DomainContext domainCtx) {
+        String serviceImport = String.format("import %s.%s.%s;", domainCtx.getProjectCtx().getPackageName(),
+                serviceCtx.getPath(), serviceCtx.formatClassName());
+        List<String> list = new ArrayList<>();
+        list.add(serviceImport);
+        return list;
+    }
+
+    @Override
+    protected String template() {
+        return "Controller.ftl";
+    }
+
 
 }

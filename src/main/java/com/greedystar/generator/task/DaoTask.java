@@ -3,11 +3,8 @@ package com.greedystar.generator.task;
 import com.greedystar.generator.context.BeanContext;
 import com.greedystar.generator.context.DomainContext;
 import com.greedystar.generator.context.ProjectContext;
-import com.greedystar.generator.describer.ClassDescriber;
-import com.greedystar.generator.entity.Constant;
 import com.greedystar.generator.task.base.AbstractClassTask;
 import com.greedystar.generator.utils.FileUtil;
-import com.greedystar.generator.utils.FreemarkerConfigUtil;
 import com.greedystar.generator.utils.StringUtil;
 import com.greedystar.generator.utils.TemplateUtil;
 import freemarker.template.TemplateException;
@@ -23,40 +20,35 @@ import java.util.Map;
  */
 public class DaoTask extends AbstractClassTask {
 
-    public DaoTask(DomainContext domainContext) {
-        this.domainCtx = domainContext;
+    private BeanContext entity;
+
+    public DaoTask(BeanContext beanContext, BeanContext entity) {
+        super(beanContext);
+        this.entity = entity;
     }
 
     @Override
     public void run() throws IOException, TemplateException {
         // 构造Dao填充数据
         Map<String, Object> daoData = new HashMap<>();
-        ProjectContext projectContext = domainCtx.getProjectCtx();
+        DomainContext domainContext = beanContext.getDomainContext();
+        ProjectContext projectContext = domainContext.getProjectCtx();
         daoData.put("Configuration", projectContext);
-        describer = new ClassDescriber();
-        BeanContext config = getBeanConfig();
-        describer.setClassName(config.getFormat().replace(Constant.PLACEHOLDER, domainCtx.getClassName()));
-        describer.setComment(domainCtx.getComment());
-        daoData.put("classInfo", describer);
-        daoData.put("EntityName", StringUtil.firstToLowerCase(domainCtx.getClassName()));
+        classInfo = beanContext.toClass();
+        daoData.put("classInfo", classInfo);
+        daoData.put("ClassName", domainContext.getClassName());
+        daoData.put("entity", entity.toClass());
+
         String filePath = FileUtil.getSourcePath() + StringUtil.package2Path(projectContext.getPackageName())
-                + StringUtil.package2Path(config.getPath());
-        String fileName = describer.getClassName() + ".java";
-        TemplateUtil.render(daoData,FreemarkerConfigUtil.getInstance().getTemplate(getTemplate()), new File(filePath, fileName));
+                + StringUtil.package2Path(beanContext.getPath());
+        String fileName = classInfo.getName() + ".java";
+        TemplateUtil.render(daoData, TemplateUtil.getInstance().getTemplate(template()), new File(filePath, fileName));
     }
 
     @Override
-    protected String getTemplate() {
+    protected String template() {
         return "Dao.ftl";
     }
 
 
-    protected BeanContext getBeanConfig() {
-        return BeanContext.getConfig(BeanContext.Type.DAO);
-    }
-
-    @Override
-    public void onEvent(Integer eventType, Object data) {
-
-    }
 }

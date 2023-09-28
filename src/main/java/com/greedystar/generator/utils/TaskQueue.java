@@ -2,11 +2,14 @@ package com.greedystar.generator.utils;
 
 import com.greedystar.generator.context.BeanContext;
 import com.greedystar.generator.context.DomainContext;
-import com.greedystar.generator.entity.Mode;
 import com.greedystar.generator.invoker.base.AbstractInvoker;
-import com.greedystar.generator.task.*;
+import com.greedystar.generator.task.ControllerTask;
+import com.greedystar.generator.task.DaoTask;
+import com.greedystar.generator.task.InterfaceTask;
+import com.greedystar.generator.task.ServiceImplTask;
 import com.greedystar.generator.task.base.AbstractTask;
 import com.greedystar.generator.task.entity.EntityTask;
+import com.greedystar.generator.task.project.ProjectStructureTask;
 
 import java.util.LinkedList;
 
@@ -27,25 +30,43 @@ public class TaskQueue {
      * @param invoker 执行器
      */
     private void initCommonTasks(AbstractInvoker invoker) {
-        DomainContext domainContext = invoker.getDomainContext();
 
-        if (BeanContext.getConfig(BeanContext.Type.CONTROLLER) != null) {
-            taskQueue.add(new ControllerTask(domainContext));
+        BeanContext bean = BeanContext.getConfig(BeanContext.Type.ENTITY);
+        if (bean != null) {
+            bean.setDomainContext(invoker.getDomainContext());
+            taskQueue.add(new EntityTask(bean));
         }
-        if (BeanContext.getConfig(BeanContext.Type.SERVICE_IMPL) != null) {
-            taskQueue.add(new ServiceTask(invoker.getDomainContext()));
+
+        DomainContext domainContext = invoker.getDomainContext();
+        BeanContext dao = BeanContext.getConfig(BeanContext.Type.DAO);
+        if (dao != null) {
+            dao.setDomainContext(domainContext);
+            taskQueue.add(new DaoTask(dao,bean));
         }
-        if (BeanContext.getConfig(BeanContext.Type.SERVICE) != null) {
-            taskQueue.add(new InterfaceTask(domainContext));
+
+        BeanContext service = BeanContext.getConfig(BeanContext.Type.INTERF);
+        if (service != null) {
+            service.setDomainContext(domainContext);
+            taskQueue.add(new InterfaceTask(service,bean));
         }
-        if (BeanContext.getConfig(BeanContext.Type.DAO) != null) {
-            taskQueue.add(new DaoTask(invoker.getDomainContext()));
+
+        BeanContext serviceImpl = BeanContext.getConfig(BeanContext.Type.SERVICE_IMPL);
+        if (serviceImpl != null) {
+            serviceImpl.setDomainContext(domainContext);
+            taskQueue.add(new ServiceImplTask(serviceImpl, service, dao, bean));
         }
+
+        BeanContext controller = BeanContext.getConfig(BeanContext.Type.CONTROLLER);
+        if (controller != null) {
+            controller.setDomainContext(domainContext);
+            taskQueue.add(new ControllerTask(controller, service,bean));
+        }
+
 //        if (BeanConfig.getConfig(BeanConfig.Type.MAPPER)!=null) {
 //            taskQueue.add(new MapperTask(invoker));
 //        }
         if (domainContext.getProjectCtx() != null) {
-            taskQueue.add(new ProjectStructureTask());
+            taskQueue.add(new ProjectStructureTask(domainContext));
         }
     }
 
@@ -56,10 +77,7 @@ public class TaskQueue {
      */
     public void initSingleTasks(AbstractInvoker invoker) {
         initCommonTasks(invoker);
-        BeanContext bean = BeanContext.getConfig(BeanContext.Type.ENTITY);
-        if (bean != null) {
-            taskQueue.add(new EntityTask(Mode.ENTITY_MAIN, invoker.getDomainContext()));
-        }
+
     }
 
 //    /**

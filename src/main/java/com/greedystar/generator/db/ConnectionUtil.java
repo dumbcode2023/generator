@@ -2,6 +2,7 @@ package com.greedystar.generator.db;
 
 
 import com.greedystar.generator.entity.ColumnInfo;
+import com.greedystar.generator.entity.TableInfo;
 import com.greedystar.generator.utils.ConfigUtil;
 import com.greedystar.generator.utils.StringUtil;
 
@@ -57,18 +58,20 @@ public class ConnectionUtil {
      * @return 包含表结构数据的列表
      * @throws Exception Exception
      */
-    public List<ColumnInfo> getMetaData(String tableName) throws Exception {
+    public TableInfo getMetaData(String tableName) throws Exception {
+        TableInfo tableInfo = new TableInfo();
         if (!initConnection()) {
             throw new Exception("Failed to connect to database at url:" + ConfigUtil.getConfiguration().getDb().getUrl());
         }
         // 获取主键
-        String primaryKey = getPrimaryKey(tableName);
+        tableInfo.setPkName(getPrimaryKey(tableName));
         // 获取表注释
-        String tableRemark = getTableRemark(tableName);
+        tableInfo.setComment(getTableRemark(tableName));
         // 获取列信息
-        List<ColumnInfo> columnInfos = getColumnInfos(tableName, primaryKey, tableRemark);
+        tableInfo.setColumns(getColumnInfos(tableName,tableInfo.getPkName()));
+        tableInfo.genPkType();
         closeConnection();
-        return columnInfos;
+        return tableInfo;
     }
 
     /**
@@ -119,13 +122,12 @@ public class ConnectionUtil {
      *
      * @param tableName 表名
      * @param primaryKey 主键列名
-     * @param tableRemark 表注释
      * @return 列信息
      * @throws Exception Exception
      */
-    private List<ColumnInfo> getColumnInfos(String tableName, String primaryKey, String tableRemark) throws Exception {
+    private List<ColumnInfo> getColumnInfos(String tableName, String primaryKey ) throws Exception {
         // 获取列信息
-        List<ColumnInfo> columnInfos = new ArrayList<>();
+        List<ColumnInfo> columns = new ArrayList<>();
         ResultSet columnResultSet = connection.getMetaData().getColumns(DataBaseFactory.getCatalog(connection),
                 DataBaseFactory.getSchema(connection), tableName, "%");
         while (columnResultSet.next()) {
@@ -135,21 +137,24 @@ public class ConnectionUtil {
             } else {
                 isPrimaryKey = false;
             }
+            int isNullableVal = columnResultSet.getInt("NULLABLE");
+            boolean isNullable = DatabaseMetaData.columnNullable==isNullableVal?true:false;
             ColumnInfo info = new ColumnInfo(columnResultSet.getString("COLUMN_NAME"), columnResultSet.getInt("DATA_TYPE"),
                     StringUtil.isEmpty(columnResultSet.getString("REMARKS")) ? "Unknown" : columnResultSet.getString("REMARKS"),
-                    tableRemark, isPrimaryKey);
-            columnInfos.add(info);
+                     isPrimaryKey);
+            info.setNullable(isNullable);
+            columns.add(info);
         }
         columnResultSet.close();
-        if (columnInfos.size() == 0) {
+        if (columns.isEmpty()) {
             closeConnection();
             throw new Exception("Can not find column information from table:" + tableName);
         }
         // SQLServer需要单独处理列REMARKS
         if (connection.getMetaData().getURL().contains("sqlserver")) {
-            parseSqlServerColumnRemarks(tableName, columnInfos);
+            parseSqlServerColumnRemarks(tableName, columns);
         }
-        return columnInfos;
+        return columns;
     }
 
     /**
@@ -196,7 +201,7 @@ public class ConnectionUtil {
                     "Unknown" : resultSet.getString("REMARKS"));
         }
         for (ColumnInfo columnInfo : columnInfos) {
-            columnInfo.setRemarks(map.get(columnInfo.getColumnName()));
+            columnInfo.setRemarks(map.get(columnInfo.getName()));
         }
         resultSet.close();
         preparedStatement.close();

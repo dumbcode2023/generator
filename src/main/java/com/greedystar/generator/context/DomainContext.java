@@ -1,10 +1,12 @@
 package com.greedystar.generator.context;
 
 import com.greedystar.generator.entity.ColumnInfo;
+import com.greedystar.generator.entity.TableInfo;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class DomainContext {
+public class DomainContext implements Serializable {
     /**
      * 主表名
      */
@@ -36,17 +38,28 @@ public class DomainContext {
     /**
      * 主表元数据
      */
-    protected List<ColumnInfo> columnInfoList;
+    protected TableInfo tableInfo;
     /**
      * 父表元数据
      */
     protected List<ColumnInfo> parentColumnInfoList;
-    /**
-     * 表注释
-     */
-    private String comment;
+
 
     private ProjectContext projectCtx;
+
+    private String pkType;
+
+    public String getPkType() {
+        return pkType;
+    }
+
+    public void setPkType(String pkType) {
+        this.pkType = pkType;
+    }
+
+    public DomainContext(ProjectContext projectCtx) {
+        this.projectCtx = projectCtx;
+    }
 
     public ProjectContext getProjectCtx() {
         return projectCtx;
@@ -112,12 +125,12 @@ public class DomainContext {
         this.parentForeignKey = parentForeignKey;
     }
 
-    public List<ColumnInfo> getColumnInfoList() {
-        return columnInfoList;
+    public TableInfo getTableInfo() {
+        return tableInfo;
     }
 
-    public void setColumnInfoList(List<ColumnInfo> columnInfoList) {
-        this.columnInfoList = columnInfoList;
+    public void setTableInfo(TableInfo tableInfo) {
+        this.tableInfo = tableInfo;
     }
 
     public List<ColumnInfo> getParentColumnInfoList() {
@@ -129,10 +142,7 @@ public class DomainContext {
     }
 
     public String getComment() {
-        return comment;
+        return tableInfo.getComment();
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
 }

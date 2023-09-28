@@ -16,7 +16,7 @@ public class ColumnInfo implements Serializable {
     /**
      * 列名
      */
-    private String columnName;
+    private String name;
     /**
      * 列名 -- 属性名
      */
@@ -33,31 +33,40 @@ public class ColumnInfo implements Serializable {
      * 列备注
      */
     private String remarks;
-    /**
-     * 表备注
-     */
-    private String tableRemarks;
+
     /**
      * 是否主键
      */
     private boolean isPrimaryKey;
 
-    public ColumnInfo(String columnName, int columnType, String remarks, String tableRemarks, boolean isPrimaryKey) {
-        this.columnName = columnName;
-        this.propertyName = StringUtil.columnName2PropertyName(columnName);
+    /**
+     * 是否必填
+     */
+    private boolean isNullable;
+
+    public ColumnInfo(String name, int columnType, String remarks , boolean isPrimaryKey) {
+        this.name = name;
+        this.propertyName = StringUtil.columnName2PropertyName(name);
         this.columnType = JDBCType.valueOf(columnType);
         this.propertyType = ConvertorUtil.parseTypeFormSqlType(JDBCType.valueOf(columnType));
         this.remarks = remarks;
-        this.tableRemarks = tableRemarks;
         this.isPrimaryKey = isPrimaryKey;
     }
 
-    public String getColumnName() {
-        return columnName;
+    public boolean isNullable() {
+        return isNullable;
     }
 
-    public void setColumnName(String columnName) {
-        this.columnName = columnName;
+    public void setNullable(boolean nullable) {
+        isNullable = nullable;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPropertyName() {
@@ -90,14 +99,6 @@ public class ColumnInfo implements Serializable {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
-    }
-
-    public String getTableRemarks() {
-        return tableRemarks;
-    }
-
-    public void setTableRemarks(String tableRemarks) {
-        this.tableRemarks = tableRemarks;
     }
 
     public boolean isPrimaryKey() {

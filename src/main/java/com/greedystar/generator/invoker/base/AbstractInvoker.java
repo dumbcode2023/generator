@@ -3,7 +3,6 @@ package com.greedystar.generator.invoker.base;
 import com.greedystar.generator.context.DomainContext;
 import com.greedystar.generator.db.ConnectionUtil;
 import com.greedystar.generator.task.base.AbstractTask;
-import com.greedystar.generator.utils.ConfigUtil;
 import com.greedystar.generator.utils.TaskQueue;
 import freemarker.template.TemplateException;
 
@@ -50,7 +49,7 @@ public abstract class AbstractInvoker implements Invoker {
     @Override
     public void execute() {
         try {
-            domainContext.setProjectCtx(ConfigUtil.getConfiguration());
+
             queryMetaData();
             initTasks();
             while (!taskQueue.isEmpty()) {

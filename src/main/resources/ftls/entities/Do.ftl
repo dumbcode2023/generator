@@ -26,9 +26,6 @@ public class ${classInfo.className} implements Serializable {
     * ${field.comment}
     *
     */
-    <#list field.annotations as annotation>
-    ${annotation}
-    </#list>
     ${field.modifier} ${field.classType.className} ${field.name};
 
     </#list>

@@ -59,32 +59,32 @@ public class FileUtil {
      */
     private static Template getTemplate(int type) throws IOException {
         switch (type) {
-            case FreemarkerConfigUtil.TYPE_ENTITY:
-                return FreemarkerConfigUtil.getInstance().getTemplate("Entity.ftl");
-            case FreemarkerConfigUtil.TYPE_DAO:
-                return FreemarkerConfigUtil.getInstance().getTemplate("Dao.ftl");
-            case FreemarkerConfigUtil.TYPE_SERVICE:
-                return FreemarkerConfigUtil.getInstance().getTemplate("Service.ftl");
-            case FreemarkerConfigUtil.TYPE_CONTROLLER:
-                return FreemarkerConfigUtil.getInstance().getTemplate("Controller.ftl");
-            case FreemarkerConfigUtil.TYPE_MAPPER:
-                return FreemarkerConfigUtil.getInstance().getTemplate("Mapper.ftl");
-            case FreemarkerConfigUtil.TYPE_INTERFACE:
-                return FreemarkerConfigUtil.getInstance().getTemplate("Interface.ftl");
-            case FreemarkerConfigUtil.TYPE_POM:
-                return FreemarkerConfigUtil.getInstance().getTemplate("structure/Pom.ftl");
-            case FreemarkerConfigUtil.TYPE_APPLICATION_FILE:
-                return FreemarkerConfigUtil.getInstance().getTemplate("structure/application-yml.ftl");
-            case FreemarkerConfigUtil.TYPE_BOOTSTRAP_CLASS:
-                return FreemarkerConfigUtil.getInstance().getTemplate("structure/Application.ftl");
-            case FreemarkerConfigUtil.TYPE_SWAGGER_CONFIG:
-                return FreemarkerConfigUtil.getInstance().getTemplate("structure/DockApi.ftl");
-            case FreemarkerConfigUtil.TYPE_BUSINESS_EXCEPTION:
-                return FreemarkerConfigUtil.getInstance().getTemplate("structure/BusinessException.ftl");
-            case FreemarkerConfigUtil.TYPE_EXCEPTION_HANDLER:
-                return FreemarkerConfigUtil.getInstance().getTemplate("structure/CommonExtHandler.ftl");
-            case FreemarkerConfigUtil.TYPE_RESPONSE:
-                return FreemarkerConfigUtil.getInstance().getTemplate("structure/Response.ftl");
+            case TemplateUtil.TYPE_ENTITY:
+                return TemplateUtil.getInstance().getTemplate("Entity.ftl");
+            case TemplateUtil.TYPE_DAO:
+                return TemplateUtil.getInstance().getTemplate("Dao.ftl");
+            case TemplateUtil.TYPE_SERVICE:
+                return TemplateUtil.getInstance().getTemplate("Service.ftl");
+            case TemplateUtil.TYPE_CONTROLLER:
+                return TemplateUtil.getInstance().getTemplate("Controller.ftl");
+            case TemplateUtil.TYPE_MAPPER:
+                return TemplateUtil.getInstance().getTemplate("Mapper.ftl");
+            case TemplateUtil.TYPE_INTERFACE:
+                return TemplateUtil.getInstance().getTemplate("Interface.ftl");
+            case TemplateUtil.TYPE_POM:
+                return TemplateUtil.getInstance().getTemplate("structure/Pom.ftl");
+            case TemplateUtil.TYPE_APPLICATION_FILE:
+                return TemplateUtil.getInstance().getTemplate("structure/application-yml.ftl");
+            case TemplateUtil.TYPE_BOOTSTRAP_CLASS:
+                return TemplateUtil.getInstance().getTemplate("structure/Application.ftl");
+            case TemplateUtil.TYPE_SWAGGER_CONFIG:
+                return TemplateUtil.getInstance().getTemplate("structure/DockApi.ftl");
+            case TemplateUtil.TYPE_BUSINESS_EXCEPTION:
+                return TemplateUtil.getInstance().getTemplate("structure/BusinessException.ftl");
+            case TemplateUtil.TYPE_EXCEPTION_HANDLER:
+                return TemplateUtil.getInstance().getTemplate("structure/CommonExtHandler.ftl");
+            case TemplateUtil.TYPE_RESPONSE:
+                return TemplateUtil.getInstance().getTemplate("structure/Response.ftl");
             default:
                 return null;
         }

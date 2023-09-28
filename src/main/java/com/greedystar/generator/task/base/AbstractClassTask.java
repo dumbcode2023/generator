@@ -1,26 +1,32 @@
 package com.greedystar.generator.task.base;
 
 
-import com.greedystar.generator.ProjectObserver;
-import com.greedystar.generator.describer.ClassDescriber;
+import com.greedystar.generator.context.BeanContext;
+import com.greedystar.generator.describer.RClass;
 
 import java.util.logging.Logger;
 
-public abstract class AbstractClassTask extends AbstractTask implements ProjectObserver {
-    protected ClassDescriber describer;
+public abstract class AbstractClassTask extends AbstractTask {
+    protected RClass classInfo;
+    protected BeanContext beanContext;
 
-    public void setDescriber(ClassDescriber describer) {
-        this.describer = describer;
+
+    public AbstractClassTask(BeanContext beanContext) {
+        this.beanContext = beanContext;
     }
 
-    public ClassDescriber getDescriber() {
-        return describer;
+    public void setClassInfo(RClass classInfo) {
+        this.classInfo = classInfo;
+    }
+
+    public RClass getClassInfo() {
+        return classInfo;
     }
 
     private Logger logger = Logger.getLogger(AbstractClassTask.class.getName());
 
 //    protected void generator(Map<String, Object> data) throws IOException, TemplateException {
-//        Template tpl = FreemarkerConfigUtil.getInstance().getTemplate(getTemplate());
+//        Template tpl = TemplateUtil.getInstance().getTemplate(getTemplate());
 //        File file = getDest();
 //        // 已存在的文件不予覆盖
 //        if (file.exists() && !ConfigUtil.getConfiguration().isFileOverride()) {
@@ -45,6 +51,6 @@ public abstract class AbstractClassTask extends AbstractTask implements ProjectO
 //        bw.close();
 //    }
 
-    protected abstract String getTemplate();
+    protected abstract String template();
 
 }

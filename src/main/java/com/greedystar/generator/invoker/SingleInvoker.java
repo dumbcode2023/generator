@@ -3,6 +3,7 @@ package com.greedystar.generator.invoker;
 import com.greedystar.generator.context.DomainContext;
 import com.greedystar.generator.invoker.base.AbstractBuilder;
 import com.greedystar.generator.invoker.base.AbstractInvoker;
+import com.greedystar.generator.utils.ConfigUtil;
 import com.greedystar.generator.utils.StringUtil;
 
 /**
@@ -18,7 +19,7 @@ public class SingleInvoker extends AbstractInvoker {
     @Override
     protected void queryMetaData() throws Exception {
         DomainContext domainContext = getDomainContext();
-        domainContext.setColumnInfoList(connectionUtil.getMetaData(domainContext.getTableName()));
+        domainContext.setTableInfo(connectionUtil.getMetaData(domainContext.getTableName()));
     }
 
     @Override
@@ -30,6 +31,7 @@ public class SingleInvoker extends AbstractInvoker {
 
         public Builder() {
             invoker = new SingleInvoker();
+            invoker.setDomainContext(new DomainContext(ConfigUtil.getConfiguration()));
         }
 
         public Builder setTableName(String tableName) {

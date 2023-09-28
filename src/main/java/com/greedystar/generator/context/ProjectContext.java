@@ -1,6 +1,6 @@
 package com.greedystar.generator.context;
 
-import com.greedystar.generator.ProjectObserver;
+import com.greedystar.generator.core.ProjectObserver;
 import com.greedystar.generator.entity.Dependency;
 import com.greedystar.generator.entity.IdStrategy;
 
@@ -52,9 +52,9 @@ public class ProjectContext  {
     private boolean mapperUnderSource;
 
     /**
-     * id策略（auto：数据库自增，uuid：生成uuid）
+     * id策略（auto：数据库自增（默认)，uuid：生成uuid）
      */
-    private IdStrategy idStrategy;
+    private IdStrategy idStrategy = IdStrategy.AUTO;
 
     private String groupId;
 
@@ -85,6 +85,8 @@ public class ProjectContext  {
 //                "io.springfox", "springfox-boot-starter", "3.0.0"));
         dependencies.put(ALIAS_MYBATIS_PLUS, new Dependency(ALIAS_MYBATIS_PLUS,
                 "com.baomidou", "mybatis-plus-boot-starter", "3.5.2"));
+        dependencies.put(ALIAS_MYSQL, new Dependency(ALIAS_MYSQL,
+                "mysql", "mysql-connector-java", "8.0.15"));
 //        dependencies.put(ALIAS_JPA, new Dependency(ALIAS_JPA,
 //                "com.baomidou","mybatis-plus-boot-starter","3.5.2"));
     }

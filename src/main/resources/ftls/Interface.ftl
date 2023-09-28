@@ -1,7 +1,7 @@
-package ${Configuration.packageName}.${Configuration.path.interf};
+package ${classInfo.packageName};
 
-import ${Configuration.packageName}.${Configuration.path.entity}.${ClassName};
-<#if Configuration.mybatisPlusEnable>
+import ${entity.packageName}.${entity.name};
+<#if Configuration.dependencies.mybatisPlus??>
 import com.baomidou.mybatisplus.extension.service.IService;
 <#else>
 import java.io.Serializable;
@@ -13,38 +13,38 @@ import java.util.List;
  * @author ${Configuration.author}
  * @date ${.now?date}
  */
-<#if Configuration.mybatisPlusEnable><#-- mybatis-plus模式 -->
-public interface ${InterfaceClassName} extends IService<${ClassName}> {
+<#if Configuration.dependencies.mybatisPlus??>
+public interface ${classInfo.name} extends IService<${entity.name}> {
 
 }
 <#else><#-- mybatis或jpa模式 -->
-public interface ${InterfaceClassName} {
+public interface ${classInfo.name} {
 
     <#if Configuration.jpaEnable><#-- jpa模式 -->
-    ${ClassName} get(Serializable id);
+    ${entity.name} get(Serializable id);
 
-    List<${ClassName}> findAll();
+    List<${entity.name}> findAll();
 
-    ${ClassName} insert(${ClassName} ${EntityName});
+    ${entity.name} insert(${entity.name} ${EntityName});
 
-    List<${ClassName}> insertBatch(List<${ClassName}> ${EntityName}s);
+    List<${entity.name}> insertBatch(List<${entity.name}> ${EntityName}s);
 
-    ${ClassName} update(${ClassName} ${EntityName});
+    ${entity.name} update(${entity.name} ${EntityName});
 
-    void delete(${ClassName} ${EntityName});
+    void delete(${entity.name} ${EntityName});
 
     <#else><#-- mybatis模式 -->
-    ${ClassName} get(Serializable id);
+    ${entity.name} get(Serializable id);
 
-    List<${ClassName}> findAll();
+    List<${entity.name}> findAll();
 
-    int insert(${ClassName} ${EntityName});
+    int insert(${entity.name} ${EntityName});
 
-    int insertBatch(List<${ClassName}> ${EntityName}s);
+    int insertBatch(List<${entity.name}> ${EntityName}s);
 
-    int update(${ClassName} ${EntityName});
+    int update(${entity.name} ${EntityName});
 
-    int delete(${ClassName} ${EntityName});
+    int delete(${entity.name} ${EntityName});
 
     </#if>
 }

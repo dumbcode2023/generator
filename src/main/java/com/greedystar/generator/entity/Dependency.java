@@ -9,6 +9,7 @@ public class Dependency {
     public static final String ALIAS_SWAGGER = "swagger";
 
     public static final String ALIAS_MYBATIS_PLUS = "mybatisPlus";
+    public static final String ALIAS_MYSQL = "mysql";
 
     public static final String ALIAS_JPA = "jpa";
 

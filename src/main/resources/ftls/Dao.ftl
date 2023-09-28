@@ -1,10 +1,10 @@
-package ${Configuration.packageName}.${Configuration.path.dao};
+package ${classInfo.packageName};
 
-import ${Configuration.packageName}.${Configuration.path.entity}.${ClassName};
-<#if Configuration.mybatisPlusEnable>
+import ${entity.packageName}.${ClassName};
+<#if Configuration.dependencies.mybatisPlus??>
 import org.apache.ibatis.annotations.Mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-<#elseif Configuration.jpaEnable>
+<#elseif Configuration.dependencies.jpa??>
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 <#else>
@@ -18,12 +18,12 @@ import java.util.List;
  * @author ${Configuration.author}
  * @date ${.now?date}
  */
-<#if Configuration.mybatisPlusEnable><#-- mybatis-plus模式 -->
+<#if Configuration.dependencies.mybatisPlus??>
 @Mapper
-public interface ${DaoClassName} extends BaseMapper<${ClassName}> {
+public interface ${classInfo.name} extends BaseMapper<${ClassName}> {
 
 }
-<#elseif Configuration.jpaEnable><#-- jpa模式 -->
+<#elseif Configuration.dependencies.jpa??><#-- jpa模式 -->
 @Repository
 public interface ${DaoClassName} extends JpaRepository<${ClassName}, Serializable> {
 

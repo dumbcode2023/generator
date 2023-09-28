@@ -2,25 +2,25 @@ package com.greedystar.generator.describer;
 
 import java.util.List;
 
-public class MethodDescriber {
+public class RMethod {
 
     private String name;
 
     private String modifier;
 
-    private List<ClassDescriber> params;
+    private List<RClass> params;
 
-    private ClassDescriber returnType;
+    private RClass returnType;
 
-    private List<ClassDescriber> annotations;
+    private List<RClass> annotations;
 
     private String comments;
 
-    public List<ClassDescriber> getAnnotations() {
+    public List<RClass> getAnnotations() {
         return annotations;
     }
 
-    public void setAnnotations(List<ClassDescriber> annotations) {
+    public void setAnnotations(List<RClass> annotations) {
         this.annotations = annotations;
     }
 
@@ -48,19 +48,19 @@ public class MethodDescriber {
         this.modifier = modifier;
     }
 
-    public List<ClassDescriber> getParams() {
+    public List<RClass> getParams() {
         return params;
     }
 
-    public void setParams(List<ClassDescriber> params) {
+    public void setParams(List<RClass> params) {
         this.params = params;
     }
 
-    public ClassDescriber getReturnType() {
+    public RClass getReturnType() {
         return returnType;
     }
 
-    public void setReturnType(ClassDescriber returnType) {
+    public void setReturnType(RClass returnType) {
         this.returnType = returnType;
     }
 }

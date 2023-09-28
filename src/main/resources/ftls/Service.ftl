@@ -1,9 +1,9 @@
-package ${Configuration.packageName}.${Configuration.path.service};
+package ${classInfo.packageName};
 
-import ${Configuration.packageName}.${Configuration.path.dao}.${DaoClassName};
-import ${Configuration.packageName}.${Configuration.path.entity}.${ClassName};
+import ${dao.packageName}.${dao.name};
+import ${entity.packageName}.${entity.name};
 ${InterfaceImport}
-<#if Configuration.mybatisPlusEnable>
+<#if Configuration.dependencies.mybatisPlus??>
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 <#else>
 import java.io.Serializable;
@@ -19,63 +19,63 @@ import java.util.List;
  * @date ${.now?date}
  */
 @Service
-<#if Configuration.mybatisPlusEnable><#-- mybatis-plus模式 -->
-public class ${ServiceClassName} extends ServiceImpl<${DaoClassName}, ${ClassName}> ${Implements} {
+<#if Configuration.dependencies.mybatisPlus??><#-- mybatis-plus模式 -->
+public class ${classInfo.name} extends ServiceImpl<${dao.name}, ${entity.name}> ${Implements} {
 
 }
 <#else><#-- mybatis或jpa模式 -->
 public class ${ServiceClassName} ${Implements} {
     @Autowired
-    private ${DaoClassName} ${DaoEntityName};
+    private ${dao.name?uncap_first} ${dao.name?uncap_first};
     <#if Configuration.jpaEnable><#-- jpa模式 -->
     ${Override}
-    public ${ClassName} get(Serializable id) {
-        return ${DaoEntityName}.findById(id).orElse(null);
+    public ${entity.name} get(Serializable id) {
+        return ${dao.name?uncap_first}.findById(id).orElse(null);
     }
     ${Override}
-    public List<${ClassName}> findAll() {
-        return ${DaoEntityName}.findAll();
+    public List<${entity.name}> findAll() {
+        return ${dao.name?uncap_first}.findAll();
     }
     ${Override}
-    public ${ClassName} insert(${ClassName} ${EntityName}) {
-        return ${DaoEntityName}.save(${EntityName});
+    public ${entity.name} insert(${entity.name} ${entity.name?uncap_first}) {
+        return ${dao.name?uncap_first}.save(${entity.name?uncap_first});
     }
     ${Override}
-    public List<${ClassName}> insertBatch(List<${ClassName}> ${EntityName}s){
-        return ${DaoEntityName}.saveAll(${EntityName}s);
+    public List<${entity.name}> insertBatch(List<${entity.name}> ${entity.name?uncap_first}s){
+        return ${dao.name?uncap_first}.saveAll(${entity.name?uncap_first}s);
     }
     ${Override}
-    public ${ClassName} update(${ClassName} ${EntityName}) {
-        return ${DaoEntityName}.save(${EntityName});
+    public ${entity.name} update(${entity.name} ${entity.name?uncap_first}) {
+        return ${dao.name?uncap_first}.save(${entity.name?uncap_first});
     }
     ${Override}
-    public void delete(${ClassName} ${EntityName}) {
-        ${DaoEntityName}.delete(${EntityName});
+    public void delete(${entity.name} ${entity.name?uncap_first}) {
+        ${dao.name?uncap_first}.delete(${entity.name?uncap_first});
     }
     <#else><#-- mybatis模式 -->
     ${Override}
-    public ${ClassName} get(Serializable id) {
-        return ${DaoEntityName}.get(id);
+    public ${entity.name} get(Serializable id) {
+        return ${dao.name?uncap_first}.get(id);
     }
     ${Override}
-    public List<${ClassName}> findAll() {
-        return ${DaoEntityName}.findAll();
+    public List<${entity.name}> findAll() {
+        return ${dao.name?uncap_first}.findAll();
     }
     ${Override}
-    public int insert(${ClassName} ${EntityName}) {
-        return ${DaoEntityName}.insert(${EntityName});
+    public int insert(${entity.name} ${entity.name?uncap_first}) {
+        return ${dao.name?uncap_first}.insert(${entity.name?uncap_first});
     }
     ${Override}
-    public int insertBatch(List<${ClassName}> ${EntityName}s) {
-        return ${DaoEntityName}.insertBatch(${EntityName}s);
+    public int insertBatch(List<${entity.name}> ${entity.name?uncap_first}s) {
+        return ${dao.name?uncap_first}.insertBatch(${entity.name?uncap_first}s);
     }
     ${Override}
-    public int update(${ClassName} ${EntityName}) {
-        return ${DaoEntityName}.update(${EntityName});
+    public int update(${entity.name} ${entity.name?uncap_first}) {
+        return ${dao.name?uncap_first}.update(${entity.name?uncap_first});
     }
     ${Override}
-    public int delete(${ClassName} ${EntityName}) {
-        return ${DaoEntityName}.delete(${EntityName});
+    public int delete(${entity.name} ${entity.name?uncap_first}) {
+        return ${dao.name?uncap_first}.delete(${entity.name?uncap_first});
     }
     </#if>
 }

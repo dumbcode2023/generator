@@ -1,36 +1,45 @@
-package ${Configuration.packageName}.${Configuration.path.entity};
+package ${classInfo.packageName};
 
-<#if Configuration.lombokEnable>
+
+<#if Configuration.dependencies['lombok']?? >
 import lombok.Data;
 </#if>
-<#if Configuration.mybatisPlusEnable>
-import com.baomidou.mybatisplus.annotation.*;
-<#elseif Configuration.jpaEnable>
-import javax.persistence.*;
-import org.hibernate.annotations.GenericGenerator;
-</#if>
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 /**
- * ${Remarks}
+ * ${classInfo.comment!''}
  *
  * @author ${Configuration.author}
  * @date ${.now?date}
  */
-<#if Configuration.lombokEnable>
+<#if Configuration.dependencies.lombok??>
 @Data
 </#if>
-<#if Configuration.mybatisPlusEnable>
-@TableName(value = "${TableName}")
-<#elseif Configuration.jpaEnable>
-@Entity
-@Table(name = "${TableName}")
-</#if>
-public class ${ClassName} implements Serializable {
-    ${Properties}
-@ApiModelProperty(value = "%s", dataType = "%s")
-    ${Methods}
+public class ${classInfo.className} implements Serializable {
+
+    <#list classInfo.fields as field>
+    /**
+    * ${field.comment}
+    *
+    */
+    <#list field.annotations as annotation>
+    ${annotation}
+    </#list>
+    ${field.modifier} ${field.classType.className} ${field.name};
+
+    </#list>
+    <#if !Configuration.dependencies.lombok??>
+       <#list classInfo.fields as field>
+           public ${field.classType.className} get${field.name?cap_first}(){
+                return this.${field.name};
+           }
+           public void set${field.name?cap_first}( ${field.classType.className} ${field.name}){
+                this.${field.name} = ${field.name};
+           }
+       </#list>
+   </#if>
 }

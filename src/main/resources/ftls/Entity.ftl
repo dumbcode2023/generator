@@ -1,4 +1,4 @@
-package ${Configuration.packageName}.${classInfo.packageName};
+package ${classInfo.packageName};
 
 
 <#if Configuration.dependencies['lombok']?? >
@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * ${classInfo.comment}
+ * ${classInfo.comment!''}
  *
  * @author ${Configuration.author}
  * @date ${.now?date}
@@ -31,9 +31,9 @@ import java.util.List;
 @Entity
 @Table(name = "${TableName}")
 </#if>
-public class ${classInfo.className} implements Serializable {
+public class ${classInfo.name} implements Serializable {
 
-    <#list classInfo.fieldList as field>
+    <#list classInfo.fields as field>
     /**
     * ${field.comment}
     *
@@ -41,15 +41,15 @@ public class ${classInfo.className} implements Serializable {
     <#list field.annotations as annotation>
     ${annotation}
     </#list>
-    ${field.modifier} ${field.classType.className} ${field.name};
+    ${field.modifier} ${field.classType.name} ${field.name};
 
     </#list>
     <#if !Configuration.dependencies.lombok??>
-       <#list classInfo.fieldList as field>
-           public ${field.classType.className} get${field.name?cap_first}(){
+       <#list classInfo.fields as field>
+           public ${field.classType.name} get${field.name?cap_first}(){
                 return this.${field.name};
            }
-           public void set${field.name?cap_first}( ${field.classType.className} ${field.name}){
+           public void set${field.name?cap_first}( ${field.classType.name} ${field.name}){
                 this.${field.name} = ${field.name};
            }
        </#list>

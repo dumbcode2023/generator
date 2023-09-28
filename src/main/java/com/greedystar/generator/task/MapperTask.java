@@ -61,7 +61,7 @@
 //        }
 //        String fileName = configuration.getName().getMapper().replace(Constant.PLACEHOLDER, invoker.getClassName()) + ".xml";
 //        // 生成Mapper文件
-//        FileUtil.generateToJava(FreemarkerConfigUtil.TYPE_MAPPER, mapperData, filePath, fileName);
+//        FileUtil.generateToJava(TemplateUtil.TYPE_MAPPER, mapperData, filePath, fileName);
 //    }
 //
 //    /**

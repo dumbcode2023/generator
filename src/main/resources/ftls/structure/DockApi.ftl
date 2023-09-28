@@ -12,12 +12,12 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-<#if Configuration.knif4jEnable>
+<#if Configuration.dependencies.knif4j??>
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
 </#if>
 
 @Configuration
-<#if Configuration.knif4jEnable>
+<#if Configuration.dependencies.knif4j??>
 @EnableKnife4j
 </#if>
 public class SwaggerConfig {

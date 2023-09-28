@@ -1,5 +1,5 @@
 author: dumbcode
-artifactId: test5
+artifactId: test6
 projectPath: D:\\
 packageName: com.dcode.test
 version: 1.0
@@ -13,22 +13,22 @@ idStrategy: AUTO
 beans:
   - code: controller
     path: controller
-    nameTemplate: $Controller
+    format: $Controller
   - code: serviceImpl
     path: service
-    nameTemplate: $ServiceImpl
+    format: $ServiceImpl
   - code: service
     path: service
-    nameTemplate: $Service
+    format: $Service
   - code: dao
     path: dao
-    nameTemplate: $Dao
+    format: $Dao
   - code: entity
     path: entity
-    nameTemplate: $
+    format: $
   - code: mapper
     path: mapper
-    nameTemplate: $Mapper
+    format: $Mapper
 db:
   url: jdbc:mysql://localhost:3306/test?useSSL=true&serverTimezone=UTC
   username: root

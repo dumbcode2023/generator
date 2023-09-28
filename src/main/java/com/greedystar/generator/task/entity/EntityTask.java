@@ -3,12 +3,15 @@ package com.greedystar.generator.task.entity;
 import com.greedystar.generator.context.BeanContext;
 import com.greedystar.generator.context.DomainContext;
 import com.greedystar.generator.context.ProjectContext;
-import com.greedystar.generator.describer.ClassDescriber;
-import com.greedystar.generator.describer.FieldDescriber;
+import com.greedystar.generator.describer.RClass;
+import com.greedystar.generator.describer.RField;
 import com.greedystar.generator.entity.IdStrategy;
-import com.greedystar.generator.entity.Mode;
+import com.greedystar.generator.entity.TableInfo;
 import com.greedystar.generator.task.base.AbstractClassTask;
-import com.greedystar.generator.utils.*;
+import com.greedystar.generator.utils.FileUtil;
+import com.greedystar.generator.utils.ForEachUtil;
+import com.greedystar.generator.utils.StringUtil;
+import com.greedystar.generator.utils.TemplateUtil;
 import freemarker.template.TemplateException;
 
 import java.io.File;
@@ -26,32 +29,27 @@ public class EntityTask extends AbstractClassTask {
 
     private String templatePath = "Entity.ftl";
 
-    public EntityTask(Mode mode, DomainContext invoker) {
-        this.domainCtx = invoker;
+    public EntityTask(BeanContext beanContext) {
+        super(beanContext);
     }
 
     @Override
     public void run() throws IOException, TemplateException {
-        // 构造Entity填充数据
-        ProjectContext projectContext = domainCtx.getProjectCtx();
+        DomainContext domainContext = beanContext.getDomainContext();
+        ProjectContext projectContext = domainContext.getProjectCtx();
         Map<String, Object> entityData = new HashMap<>();
         entityData.put("Configuration", projectContext);
-        entityData.put("TableName", domainCtx.getTableName());
+        entityData.put("TableName", domainContext.getTableName());
 
-        describer = new ClassDescriber();
-        describer.setClassName(domainCtx.getClassName());
-        describer.setComment(domainCtx.getColumnInfoList().get(0).getTableRemarks());
-        describer.setFieldList(fields());
-        describer.setPackageName(BeanContext.getConfig(BeanContext.Type.ENTITY).getPath());
-        entityData.put("classInfo", describer);
+        classInfo = beanContext.toClass();
+        classInfo.setFields(fields());
+        entityData.put("classInfo", classInfo);
 
-        String tp = BeanContext.getConfig(BeanContext.Type.ENTITY).getPath();
         String filePath = FileUtil.getSourcePath() + StringUtil.package2Path(projectContext.getPackageName())
-                + StringUtil.package2Path(tp);
-        String fileName = describer.getClassName() + ".java";
-        // 生成Entity文件
-       TemplateUtil.render(entityData,FreemarkerConfigUtil.getInstance().getTemplate(getTemplate())
-               ,new File(filePath, fileName));
+                + StringUtil.package2Path(beanContext.getPath());
+        String fileName = classInfo.getName() + ".java";
+        TemplateUtil.render(entityData, TemplateUtil.getInstance().getTemplate(template())
+                , new File(filePath, fileName));
     }
 
     /**
@@ -59,47 +57,39 @@ public class EntityTask extends AbstractClassTask {
      *
      * @return 属性代码段
      */
-    public List<FieldDescriber> fields() {
-        List<FieldDescriber> fieldDescriber = new ArrayList<>();
-        domainCtx.getColumnInfoList().forEach(ForEachUtil.withIndex((info, index) -> {
-            if (info.getColumnName().equals(domainCtx.getForeignKey())) {
+    public RField[] fields() {
+        List<RField> fields = new ArrayList<>();
+        DomainContext domainContext = beanContext.getDomainContext();
+        TableInfo tableInfo = domainContext.getTableInfo();
+        tableInfo.getColumns().forEach(ForEachUtil.withIndex((info, index) -> {
+            if (info.getName().equals(domainContext.getForeignKey())) {
                 return;
             }
-            FieldDescriber field = new FieldDescriber();
-            field.setModifier("private");
+            RField field = RField.of(info.getPropertyName());
             field.setComment(info.getRemarks());
-            ClassDescriber od = new ClassDescriber();
-            od.setType(ClassDescriber.Type.CLASS);
-            od.setClassName(info.getPropertyType());
-            field.setClassType(od);
-            field.setName(info.getPropertyName());
-            if(info.isPrimaryKey()){
-                ProjectContext projectContext = domainCtx.getProjectCtx();
-                if(projectContext.getIdStrategy().equals(IdStrategy.AUTO)) {
-                    field.getAnnotations().add(String.format("@TableId(value = \"%s\", type =IdType.AUTO)", field.getName()));
-                }else{
+            field.setClassType(RClass.of(info.getPropertyType()));
+            if (info.isPrimaryKey()) {
+                ProjectContext projectContext = domainContext.getProjectCtx();
+                if (projectContext.getIdStrategy().equals(IdStrategy.AUTO)) {
+                    field.getAnnotations().add(String.format("@TableId(value = \"%s\", type = IdType.AUTO)", field.getName()));
+                } else {
                     field.getAnnotations().add(String.format("@TableId(value = \"%s\")", field.getName()));
                 }
             }
-            fieldDescriber.add(field);
-//          generateORMAnnotation(sb, info);
+            fields.add(field);
         }));
-        return fieldDescriber;
+        return fields.toArray(new RField[]{});
     }
 
     @Override
-    protected String getTemplate() {
+    protected String template() {
         return templatePath;
     }
 
-    public void setTemplatePath(String templatePath){
+    public void setTemplatePath(String templatePath) {
         this.templatePath = templatePath;
     }
 
-    @Override
-    public void onEvent(Integer eventType, Object data) {
-
-    }
 
     /**
      * 生成实体类存取方法

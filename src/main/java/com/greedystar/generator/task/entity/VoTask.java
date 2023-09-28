@@ -19,28 +19,28 @@
 //import java.util.Map;
 //import java.util.stream.Collectors;
 //
-//public class DtoTask extends AbstractClassTask {
+//public class VoTask extends AbstractClassTask {
 //
 //
-//    public DtoTask(BeanContext beanContext) {
+//    public VoTask(BeanContext beanContext) {
 //        this.beanContext = beanContext;
 //    }
 //
 //    @Override
 //    public void run() {
-//        Map<String, Object> entityData = new HashMap<>();
+//        Map<String, Object> data = new HashMap<>();
 //        DomainContext domainContext = beanContext.getDomainContext();
 //        ProjectContext projectContext = domainContext.getProjectCtx();
-//        entityData.put("Configuration", projectContext);
+//        data.put("Configuration", projectContext);
 //        classInfo = new RClass(beanContext.getPath(),beanContext.formatClassName(), fields());
 //        classInfo.setComment(domainContext.getComment());
-//        entityData.put("classInfo", classInfo);
+//        data.put("classInfo", classInfo);
 //
 //        String filePath = FileUtil.getSourcePath() + StringUtil.package2Path(projectContext.getPackageName())
 //                + StringUtil.package2Path(beanContext.getPath());
 //        String fileName = classInfo.getName() + ".java";
 //        try {
-//            TemplateUtil.render(entityData, TemplateUtil.getInstance().getTemplate(template()), new File(filePath, fileName));
+//            TemplateUtil.render(data, TemplateUtil.getInstance().getTemplate(template()), new File(filePath, fileName));
 //        } catch (IOException e) {
 //            throw new BusinessException(e);
 //        }
